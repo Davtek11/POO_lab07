@@ -6,8 +6,8 @@ import chess.PlayerColor;
 import java.util.ArrayList;
 
 public abstract class ChessPiece {
-  private PieceType type;
-  private PlayerColor color;
+  private final PieceType type;
+  private final PlayerColor color;
   private Coord pos;
   private ArrayList<Coord> possibleMoves;
   
