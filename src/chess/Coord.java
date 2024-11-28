@@ -9,4 +9,14 @@ public class Coord {
     this.x = x;
     this.y = y;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if(obj == null || obj.getClass() != this.getClass())
+      return false;
+
+    Coord other = (Coord) obj;
+
+    return this.x == other.x && this.y == other.y;
+  }
 }
