@@ -22,4 +22,6 @@ public class King extends ChessPiece {
     ///une case autour
   }
 
+  protected void move
+
 }

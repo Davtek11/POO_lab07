@@ -5,6 +5,8 @@ import chess.ChessView;
 import chess.PieceType;
 import chess.PlayerColor;
 
+import static engine.ChessPiece.board;
+
 public class ChessGame implements ChessController {
 
   private ChessView view;
@@ -19,12 +21,8 @@ public class ChessGame implements ChessController {
   @Override
   public boolean move(int fromX, int fromY, int toX, int toY) {
     System.out.println(String.format("TO REMOVE : from (%d, %d) to (%d, %d)", fromX, fromY, toX, toY)); // TODO remove
-    //récupérer type et couleur de la piece en fromX et fromY
-    //si toX, toY est une position valide ET si tour de la bonne couleur
-    //view.removePiece(fromX, fromY);
-    //view.putPiece(type, color, toX, toY);
-    //return true
-    //else return false
+    boolean canMove = board[fromX][fromY].move(toX, toY);
+
     return false; // TODO
   }
 
@@ -35,6 +33,7 @@ public class ChessGame implements ChessController {
     
     // Placement de départ
     view.putPiece(PieceType.ROOK, PlayerColor.WHITE, 0, 0);
+    new Rook(PlayerColor.WHITE, 0, 0);
     view.putPiece(PieceType.KNIGHT, PlayerColor.WHITE, 1, 0);
     view.putPiece(PieceType.BISHOP, PlayerColor.WHITE, 2, 0);
     view.putPiece(PieceType.QUEEN, PlayerColor.WHITE, 3, 0);

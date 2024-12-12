@@ -18,5 +18,13 @@ public class Bishop extends ChessPiece {
     ///TODO: ajouter mouvements possibles
     ///diagonales
   }
+
+  public boolean move (int toX, int toY) {
+    if ((toX == this.pos.x+1 && toY == this.pos.y+1) ||
+            (toX == this.pos.x-1 && toY == this.pos.y-1) ||
+            (toX == this.pos.x-1 && toY == this.pos.y+1) ||
+    ) {}
+
+  }
   
 }
