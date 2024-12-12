@@ -21,4 +21,21 @@ public class Pawn extends ChessPiece {
     ///une case devant, deux cases devant si premier mouvement, diagonale pour manger
     ///ATTENTION sens de mouvement dépend si blanc ou noir
   }
+
+  protected  boolean move(int toX, int toY) {
+    boolean canMove = false;
+    if (this.color == PlayerColor.BLACK){
+      canMove = this.pos.y - toY == 1;
+    } else {
+      canMove = this.pos.y + toY == -1;
+    }
+    if (isFirstMove){
+      if (this.color == PlayerColor.BLACK){
+        canMove = canMove || this.pos.y - toY == 2;
+      } else {
+        canMove = canMove || this.pos.y + toY == -2;
+      }
+    }
+    return canMove && this.pos.x == toX;
+  }
 }

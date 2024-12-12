@@ -18,5 +18,8 @@ public class Queen extends ChessPiece {
     ///TODO: ajouter mouvements possibles
     ///ligne, colonne, diagonales
   }
-  
+
+  protected boolean move (int toX, int toY) {
+    return diagonal(toX, toY, true) || vertical(toX, toY, true) || horizontal(toX, toY, true);
+  }
 }

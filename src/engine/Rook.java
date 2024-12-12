@@ -18,4 +18,8 @@ public class Rook extends ChessPiece {
     ///TODO: ajouter mouvements possibles
     ///ligne et colonne
   }
+
+  protected boolean move (int toX, int toY) {
+    return horizontal(toX, toY, true) || vertical(toX, toY, true);
+  }
 }
