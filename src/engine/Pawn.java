@@ -14,8 +14,6 @@ public class Pawn extends ChessPiece {
 
   public Pawn(PlayerColor color, int x, int y) {
     this(PieceType.PAWN, color, x, y);
-
-    ///une case devant, deux cases devant si premier mouvement, diagonale pour manger
   }
 
   protected  boolean move(int toX, int toY) {
