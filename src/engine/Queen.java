@@ -20,6 +20,7 @@ public class Queen extends ChessPiece {
   }
 
   protected boolean move (int toX, int toY) {
-    return diagonal(toX, toY, true) || vertical(toX, toY, true) || horizontal(toX, toY, true);
+    return piecesCheck(toX, toY) && (diagonal(toX, toY, true)
+            || vertical(toX, toY, true) || horizontal(toX, toY, true)) ;
   }
 }

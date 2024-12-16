@@ -23,6 +23,9 @@ public class ChessGame implements ChessController {
     System.out.printf("TO REMOVE : from (%d, %d) to (%d, %d)%n", fromX, fromY, toX, toY); // TODO remove
     boolean canMove = board[fromX][fromY].move(toX, toY);
     if (canMove) {
+      if (board[toX][toY] != null){
+        view.displayMessage("a "+ board[toX][toY].color + " " + board[toX][toY].type + " has been eaten");
+      }
       view.removePiece(fromX, fromY);
       view.putPiece(board[fromX][fromY].type, board[fromX][fromY].color, toX, toY);
       board[toX][toY] = board[fromX][fromY];

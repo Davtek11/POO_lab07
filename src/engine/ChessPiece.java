@@ -36,5 +36,21 @@ public abstract class ChessPiece {
     return pos.x == toX && (multipleMove || Math.abs(pos.y - toY) == 1);
   }
 
+  protected boolean piecesCheck(int toX, int toY) {
+    int dx = Integer.compare(toX, pos.x);
+    int dy = Integer.compare(toY, pos.y);
+
+    int steps = Math.max(Math.abs(toX - pos.x), Math.abs(toY - pos.y)); // number of tiles to check
+
+    for (int i = 1; i < steps; i++) {
+      if (board[pos.x + i * dx][pos.y + i * dy] != null) {
+        System.out.println("ERROR: you can't move here there is a piece between you and the spot");
+        return false; // no need to continue once we know there is an obstacle
+      }
+    }
+    return true;
+  }
+
+
 
 }

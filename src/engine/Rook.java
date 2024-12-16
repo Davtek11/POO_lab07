@@ -20,6 +20,6 @@ public class Rook extends ChessPiece {
   }
 
   protected boolean move (int toX, int toY) {
-    return horizontal(toX, toY, true) || vertical(toX, toY, true);
+    return piecesCheck(toX, toY) && (horizontal(toX, toY, true) || vertical(toX, toY, true));
   }
 }

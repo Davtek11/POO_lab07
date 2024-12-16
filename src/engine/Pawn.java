@@ -20,19 +20,21 @@ public class Pawn extends ChessPiece {
 
   protected  boolean move(int toX, int toY) {
     boolean canMove;
-    if (this.color == PlayerColor.BLACK){
-      canMove = this.pos.y - toY == 1;
-    } else {
-      canMove = this.pos.y - toY == -1;
-    }
+    int direction = this.color == PlayerColor.BLACK ? 1 : -1;
+    boolean isCapturing = Math.abs(pos.x - toX) == 1 && pos.y - toY == direction && board[toX][toY] != null
+            && board[toX][toY].color != this.color; // this checks weither I can capture if I wanted it
+
+    canMove = this.pos.y - toY == direction;
+
     if (isFirstMove){
-      if (this.color == PlayerColor.BLACK){
-        canMove = canMove || this.pos.y - toY == 2;
-      } else {
-        canMove = canMove || this.pos.y - toY == -2;
-      }
-      isFirstMove = false;
+      canMove = canMove || this.pos.y - toY == 2 * direction;
     }
-    return canMove && this.pos.x == toX;
+    canMove = canMove && this.pos.x == toX && piecesCheck(toX, toY);
+
+    if (canMove && board[toX][toY] == null || isCapturing) {
+      isFirstMove = false;
+      return true;
+    }
+    return false;
   }
 }
