@@ -30,6 +30,7 @@ public abstract class ChessPiece {
   }
 
   protected boolean horizontal(int toX, int toY, boolean multipleMove) {
+    System.out.println(toX + " " + toY);
     return pos.y == toY && (multipleMove || Math.abs(pos.x - toX) == 1);
   }
 

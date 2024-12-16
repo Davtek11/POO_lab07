@@ -20,10 +20,7 @@ public class Bishop extends ChessPiece {
   }
 
   public boolean move (int toX, int toY) {
-    return (toX == this.pos.x+1 && toY == this.pos.y+1) ||
-            (toX == this.pos.x-1 && toY == this.pos.y-1) ||
-            (toX == this.pos.x-1 && toY == this.pos.y+1) ||
-            (toX == this.pos.x+1 && toY == this.pos.y-1);
+    return diagonal(toX, toY, true);
   }
   
 }

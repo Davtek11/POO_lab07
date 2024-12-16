@@ -27,14 +27,15 @@ public class Pawn extends ChessPiece {
     if (this.color == PlayerColor.BLACK){
       canMove = this.pos.y - toY == 1;
     } else {
-      canMove = this.pos.y + toY == -1;
+      canMove = this.pos.y - toY == -1;
     }
     if (isFirstMove){
       if (this.color == PlayerColor.BLACK){
         canMove = canMove || this.pos.y - toY == 2;
       } else {
-        canMove = canMove || this.pos.y + toY == -2;
+        canMove = canMove || this.pos.y - toY == -2;
       }
+      isFirstMove = false;
     }
     return canMove && this.pos.x == toX;
   }
