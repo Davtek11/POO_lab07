@@ -56,7 +56,7 @@ public class ChessGame implements ChessController {
     view.putPiece(PieceType.KNIGHT, PlayerColor.WHITE, 6, 0);
     new Knight(PlayerColor.WHITE, 6, 0);
     view.putPiece(PieceType.ROOK, PlayerColor.WHITE, 7, 0);
-    Rook r = new Rook(PlayerColor.WHITE, 7, 0);
+    new Rook(PlayerColor.WHITE, 7, 0);
 
     for(int i = 0; i < 8; i++) {
       view.putPiece(PieceType.PAWN, PlayerColor.WHITE, i, 1);

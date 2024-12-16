@@ -3,14 +3,12 @@ package engine;
 import chess.Coord;
 import chess.PieceType;
 import chess.PlayerColor;
-import java.util.ArrayList;
 
 public abstract class ChessPiece {
   static public ChessPiece[][] board = new ChessPiece[8][8];
   protected final PieceType type;
   protected final PlayerColor color;
   protected Coord pos;
-  private ArrayList<Coord> possibleMoves;
   
   protected ChessPiece(PieceType type, PlayerColor color, int x, int y) {
     this.type = type;
