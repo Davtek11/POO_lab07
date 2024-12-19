@@ -18,6 +18,67 @@ public class ChessGame implements ChessController {
     view.startView();
   }
 
+  public void promotion(int x, int y) {
+
+    //reine, cavalier, fou, tour
+    ChessView.UserChoice[] choices = new ChessView.UserChoice[4];
+    choices[0] = new ChessView.UserChoice() {
+      @Override
+      public String textValue() {
+        return "reine";
+      }
+      public String toString() {
+        return textValue();
+      }
+    };
+    choices[1] = new ChessView.UserChoice() {
+      @Override
+      public String textValue() {
+        return "cavalier";
+      }
+      public String toString() {
+        return textValue();
+      }
+    };
+    choices[2] = new ChessView.UserChoice() {
+      @Override
+      public String textValue() {
+        return "fou";
+      }
+      public String toString() {
+        return textValue();
+      }
+    };
+    choices[3] = new ChessView.UserChoice() {
+      @Override
+      public String textValue() {
+        return "tour";
+      }
+      public String toString() {
+        return textValue();
+      }
+    };
+
+    ChessView.UserChoice c = view.askUser("promotion", "par quelle pièce voulez-vous remplacer votre pion", choices);
+    view.removePiece(x, y);
+
+     if(c.textValue().equalsIgnoreCase("reine")) {
+       view.putPiece(PieceType.QUEEN, board[x][y].color, x, y);
+       board[x][y] = new Queen(board[x][y].color, x, y);
+     } else if (c.textValue().equalsIgnoreCase("tour")) {
+       view.putPiece(PieceType.ROOK, board[x][y].color, x, y);
+       board[x][y] = new Rook(board[x][y].color, x, y);
+     } else if (c.textValue().equalsIgnoreCase("cavalier")) {
+       view.putPiece(PieceType.KNIGHT, board[x][y].color, x, y);
+       board[x][y] = new Knight(board[x][y].color, x, y);
+     } else if (c.textValue().equalsIgnoreCase("fou")) {
+       view.putPiece(PieceType.BISHOP, board[x][y].color, x, y);
+       board[x][y] = new Bishop(board[x][y].color, x, y);
+     } else {
+       return;
+     }
+  }
+
   public void toggleTurn() {
     if(colorTurn == PlayerColor.WHITE)
       colorTurn = PlayerColor.BLACK;
@@ -48,6 +109,17 @@ public class ChessGame implements ChessController {
       board[toX][toY].pos.x = toX;
       board[toX][toY].pos.y = toY;
       board[fromX][fromY] = null;
+
+      // Promotion
+      if(board[toX][toY].type == PieceType.PAWN &&
+              (board[toX][toY].color == PlayerColor.BLACK && toY == 0) ||
+              (board[toX][toY].color == PlayerColor.WHITE && toY == 4)) {
+
+        System.out.println("on est au bout");
+        promotion(toX, toY);
+
+      }
+
     } else {
       System.out.println("this piece can't move like this, learn how to play!!!!!");
       return false;
