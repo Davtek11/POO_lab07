@@ -35,8 +35,6 @@ public class ChessGame implements ChessController {
       return false;
     }
 
-    toggleTurn();
-
     System.out.printf("TO REMOVE : from (%d, %d) to (%d, %d)%n", fromX, fromY, toX, toY); // TODO remove
 
     boolean canMove = board[fromX][fromY].move(toX, toY);
@@ -51,9 +49,12 @@ public class ChessGame implements ChessController {
       board[toX][toY].pos.y = toY;
       board[fromX][fromY] = null;
     } else {
-      System.out.println("this piece can't move like this learn to play!!!!!");
+      System.out.println("this piece can't move like this, learn how to play!!!!!");
+      return false;
     }
-    return false; // TODO
+
+    toggleTurn();
+    return true;
   }
 
   @Override
