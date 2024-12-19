@@ -10,7 +10,7 @@ import static engine.ChessPiece.board;
 public class ChessGame implements ChessController {
 
   private ChessView view;
-  ///TODO: variable pour stocker à qui le tour de jouer
+  PlayerColor colorTurn;
 
   @Override
   public void start(ChessView view) {
@@ -18,9 +18,27 @@ public class ChessGame implements ChessController {
     view.startView();
   }
 
+  public void toggleTurn() {
+    if(colorTurn == PlayerColor.WHITE)
+      colorTurn = PlayerColor.BLACK;
+    else if(colorTurn == PlayerColor.BLACK)
+      colorTurn = PlayerColor.WHITE;
+  }
+
   @Override
   public boolean move(int fromX, int fromY, int toX, int toY) {
+
+    if(board[fromX][fromY] == null) {
+      return false;
+    } else if(board[fromX][fromY].color != colorTurn) {
+      System.out.println("Not your turn !!!!");
+      return false;
+    }
+
+    toggleTurn();
+
     System.out.printf("TO REMOVE : from (%d, %d) to (%d, %d)%n", fromX, fromY, toX, toY); // TODO remove
+
     boolean canMove = board[fromX][fromY].move(toX, toY);
     if (canMove) {
       if (board[toX][toY] != null){
@@ -42,6 +60,8 @@ public class ChessGame implements ChessController {
   public void newGame() {
     view.displayMessage("new game (TO REMOVE)"); // TODO
     ///TODO: optimiser placement pieces
+
+    colorTurn = PlayerColor.WHITE;
     
     // Placement de départ
     view.putPiece(PieceType.ROOK, PlayerColor.WHITE, 0, 0);

@@ -17,7 +17,7 @@ public abstract class ChessPiece {
     if (board[x][y] == null) {
       board[x][y] = this;
     } else {
-      System.out.println("ERROR : adding a piece somewhere another pieces exists already:" + type);
+      System.out.println("ERROR : there is already a piece in this position:" + type);
     }
   }
 
