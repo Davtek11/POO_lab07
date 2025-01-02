@@ -16,6 +16,7 @@ public class Pawn extends ChessPiece {
     this(PieceType.PAWN, color, x, y);
   }
 
+  @Override
   protected  boolean move(int toX, int toY) {
     boolean canMove;
     int direction = this.color == PlayerColor.BLACK ? 1 : -1;

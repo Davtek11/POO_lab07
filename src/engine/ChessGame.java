@@ -2,9 +2,9 @@ package engine;
 
 import chess.ChessController;
 import chess.ChessView;
+import chess.PieceChoice;
 import chess.PieceType;
 import chess.PlayerColor;
-
 import static engine.ChessPiece.board;
 
 public class ChessGame implements ChessController {
@@ -20,63 +20,31 @@ public class ChessGame implements ChessController {
 
   public void promotion(int x, int y) {
 
-    //reine, cavalier, fou, tour
-    ChessView.UserChoice[] choices = new ChessView.UserChoice[4];
-    choices[0] = new ChessView.UserChoice() {
-      @Override
-      public String textValue() {
-        return "reine";
-      }
-      public String toString() {
-        return textValue();
-      }
-    };
-    choices[1] = new ChessView.UserChoice() {
-      @Override
-      public String textValue() {
-        return "cavalier";
-      }
-      public String toString() {
-        return textValue();
-      }
-    };
-    choices[2] = new ChessView.UserChoice() {
-      @Override
-      public String textValue() {
-        return "fou";
-      }
-      public String toString() {
-        return textValue();
-      }
-    };
-    choices[3] = new ChessView.UserChoice() {
-      @Override
-      public String textValue() {
-        return "tour";
-      }
-      public String toString() {
-        return textValue();
-      }
-    };
+    try {
+      PieceChoice[] choices = {new PieceChoice("reine", PieceType.QUEEN, Queen.class),
+      new PieceChoice("cavalier", PieceType.KNIGHT, Knight.class),
+      new PieceChoice("fou", PieceType.BISHOP, Bishop.class),
+      new PieceChoice("tour", PieceType.ROOK, Rook.class)};
 
-    ChessView.UserChoice c = view.askUser("promotion", "par quelle pièce voulez-vous remplacer votre pion", choices);
-    view.removePiece(x, y);
+      ChessView.UserChoice c = view.askUser("promotion", "par quelle pièce voulez-vous remplacer votre pion", choices);
+      view.removePiece(x, y);
 
-     if(c.textValue().equalsIgnoreCase("reine")) {
-       view.putPiece(PieceType.QUEEN, board[x][y].color, x, y);
-       board[x][y] = new Queen(board[x][y].color, x, y);
-     } else if (c.textValue().equalsIgnoreCase("tour")) {
-       view.putPiece(PieceType.ROOK, board[x][y].color, x, y);
-       board[x][y] = new Rook(board[x][y].color, x, y);
-     } else if (c.textValue().equalsIgnoreCase("cavalier")) {
-       view.putPiece(PieceType.KNIGHT, board[x][y].color, x, y);
-       board[x][y] = new Knight(board[x][y].color, x, y);
-     } else if (c.textValue().equalsIgnoreCase("fou")) {
-       view.putPiece(PieceType.BISHOP, board[x][y].color, x, y);
-       board[x][y] = new Bishop(board[x][y].color, x, y);
-     } else {
-       return;
-     }
+      int i;
+      for(i = 0; i < choices.length; i++) {
+        if(c.textValue().equalsIgnoreCase(choices[i].textValue())) {
+          break;
+        }
+      }
+
+      if(i < choices.length) {
+        view.putPiece(choices[i].getType(), colorTurn, x, y);
+        board[x][y] = (ChessPiece) choices[i].getPieceClass().getDeclaredConstructor(PlayerColor.class, int.class, int.class).newInstance(board[x][y].color, x, y);
+      }
+        
+    } catch (Exception e) {
+      System.out.println("Promotion error : " + e);
+    }
+    
   }
 
   public void toggleTurn() {

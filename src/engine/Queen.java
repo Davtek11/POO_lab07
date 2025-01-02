@@ -13,6 +13,7 @@ public class Queen extends ChessPiece {
     this(PieceType.QUEEN, color, x, y);
   }
 
+  @Override
   protected boolean move (int toX, int toY) {
     return piecesCheck(toX, toY) && (diagonal(toX, toY, true)
             || vertical(toX, toY, true) || horizontal(toX, toY, true)) ;
