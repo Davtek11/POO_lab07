@@ -22,4 +22,8 @@ public class King extends ChessPiece {
     ///une case autour
   }
 
+  protected boolean move (int toX, int toY) {
+    return vertical(toX, toY, false) || horizontal(toX, toY, false) || diagonal(toX, toY, false);
+  }
+
 }
