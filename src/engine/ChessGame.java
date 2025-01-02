@@ -2,6 +2,7 @@ package engine;
 
 import chess.ChessController;
 import chess.ChessView;
+import chess.Coord;
 import chess.PieceChoice;
 import chess.PieceType;
 import chess.PlayerColor;
@@ -68,8 +69,13 @@ public class ChessGame implements ChessController {
 
     boolean canMove = board[fromX][fromY].move(toX, toY);
     if (canMove) {
-      if (board[toX][toY] != null){
-        view.displayMessage("a "+ board[toX][toY].color + " " + board[toX][toY].type + " has been eaten");
+      if (board[toX][toY] != null) {
+        if(board[toX][toY].color == board[fromX][fromY].color) {
+          System.out.println("this position is not empty.");
+          return false;
+        } else {
+          view.displayMessage("a "+ board[toX][toY].color + " " + board[toX][toY].type + " has been eaten");
+        }
       }
       view.removePiece(fromX, fromY);
       view.putPiece(board[fromX][fromY].type, board[fromX][fromY].color, toX, toY);
@@ -80,10 +86,10 @@ public class ChessGame implements ChessController {
 
       // Promotion
       if(board[toX][toY].type == PieceType.PAWN &&
-              (board[toX][toY].color == PlayerColor.BLACK && toY == 0) ||
-              (board[toX][toY].color == PlayerColor.WHITE && toY == 4)) {
+              (board[toX][toY].color == PlayerColor.BLACK && toY == 0 ||
+              board[toX][toY].color == PlayerColor.WHITE && toY == Coord.BOARD_SIZE - 1)) {
 
-        System.out.println("on est au bout");
+        System.out.println("promotion");
         promotion(toX, toY);
 
       }
