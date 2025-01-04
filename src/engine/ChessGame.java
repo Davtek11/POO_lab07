@@ -19,6 +19,72 @@ public class ChessGame implements ChessController {
     view.startView();
   }
 
+  // 0 = nothing, -1 = petit roque, 1 = grand roque
+  public int checkRoque(int fromX, int fromY, int toX, int toY) {
+    int ret = 0;
+    if(board[fromX][fromY].isFirstMove() && board[fromX][fromY].type == PieceType.KING && fromY == toY) {
+      int rookX = -1;
+      if(toX == fromX + 2) {
+        // Petit roque
+        rookX = toX + 1;
+        ret = -1;
+      } else if(toX == fromX - 2) {
+        // Grand roque
+        rookX = toX - 2;
+        ret = 1;
+      } else {
+        return 0;
+      }
+
+      if(board[fromX][fromY].piecesCheck(rookX, toY) && board[rookX][toY] != null && board[rookX][toY].type == PieceType.ROOK && board[rookX][toY].isFirstMove()) {
+        return ret;
+      }
+    }
+    return 0;
+  }
+
+  public void roque(int x, int y, int roqueType) {
+
+    int toX = 0, rookX = 0, rookToX = 0;
+
+    if(roqueType == -1) {
+      // Petit roque
+      toX = x + 2;
+      rookX = toX + 1;
+      rookToX = x + 1;
+      
+    } else if(roqueType == 1) {
+      // Grand roque
+      toX = x - 2;
+      rookX = toX - 2;
+      rookToX = x - 1;
+    }
+
+    view.displayMessage("Roque by " + board[x][y].color + " player");
+
+    // Move king
+    view.removePiece(x, y);
+    view.putPiece(PieceType.KING, board[x][y].color, toX, y);
+    board[toX][y] = board[x][y];
+    board[toX][y].pos.x = toX;
+    board[toX][y].pos.y = y;
+    board[x][y] = null;
+
+    // Move rook
+    view.removePiece(rookX, y);
+    view.putPiece(PieceType.ROOK, board[rookX][y].color, rookToX, y);
+    board[rookToX][y] = board[rookX][y];
+    board[rookToX][y].pos.x = rookToX;
+    board[rookToX][y].pos.y = y;
+    board[rookX][y] = null;
+  }
+
+  public boolean checkPromotion(int toX, int toY) {
+    return board[toX][toY].type == PieceType.PAWN &&
+    (board[toX][toY].color == PlayerColor.BLACK && toY == 0 ||
+    board[toX][toY].color == PlayerColor.WHITE && toY == Coord.BOARD_SIZE - 1);
+  }
+
   public void promotion(int x, int y) {
 
     try {
@@ -67,8 +133,14 @@ public class ChessGame implements ChessController {
 
     System.out.printf("TO REMOVE : from (%d, %d) to (%d, %d)%n", fromX, fromY, toX, toY); // TODO remove
 
-    boolean canMove = board[fromX][fromY].move(toX, toY);
-    if (canMove) {
+    // Roque if possible, else check other movements
+    int roqueType = 0;
+    if((roqueType = checkRoque(fromX, fromY, toX, toY)) != 0)
+    {
+      roque(fromX, fromY, roqueType);
+    } 
+    else if (board[fromX][fromY].move(toX, toY))
+    {
       if (board[toX][toY] != null) {
         if(board[toX][toY].color == board[fromX][fromY].color) {
           System.out.println("this position is not empty.");
@@ -85,9 +157,7 @@ public class ChessGame implements ChessController {
       board[fromX][fromY] = null;
 
       // Promotion
-      if(board[toX][toY].type == PieceType.PAWN &&
-              (board[toX][toY].color == PlayerColor.BLACK && toY == 0 ||
-              board[toX][toY].color == PlayerColor.WHITE && toY == Coord.BOARD_SIZE - 1)) {
+      if(checkPromotion(toX, toY)) {
 
         System.out.println("promotion");
         promotion(toX, toY);
@@ -97,6 +167,10 @@ public class ChessGame implements ChessController {
     } else {
       System.out.println("this piece can't move like this, learn how to play!!!!!");
       return false;
+    }
+
+    if(board[toX][toY].isFirstMove()) {
+      board[toX][toY].makeFirstMove();
     }
 
     toggleTurn();

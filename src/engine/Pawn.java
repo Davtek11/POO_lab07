@@ -4,8 +4,6 @@ import chess.PieceType;
 import chess.PlayerColor;
 
 public class Pawn extends ChessPiece {
-
-  private boolean isFirstMove; //repetition avec roi, trouver solution
   
   protected Pawn(PieceType type, PlayerColor color, int x, int y) {
     super(type, color, x, y);
@@ -25,13 +23,12 @@ public class Pawn extends ChessPiece {
 
     canMove = this.pos.y - toY == direction;
 
-    if (isFirstMove){
+    if (isFirstMove()){
       canMove = canMove || this.pos.y - toY == 2 * direction;
     }
     canMove = canMove && this.pos.x == toX && piecesCheck(toX, toY);
 
     if (canMove && board[toX][toY] == null || isCapturing) {
-      isFirstMove = false;
       return true;
     }
     return false;
