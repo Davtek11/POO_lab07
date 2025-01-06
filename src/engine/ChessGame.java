@@ -2,9 +2,10 @@ package engine;
 
 import chess.ChessController;
 import chess.ChessView;
+import chess.Coord;
+import chess.PieceChoice;
 import chess.PieceType;
 import chess.PlayerColor;
-
 import static engine.ChessPiece.board;
 
 public class ChessGame implements ChessController {
@@ -16,6 +17,35 @@ public class ChessGame implements ChessController {
   public void start(ChessView view) {
     this.view = view;
     view.startView();
+  }
+
+  public void promotion(int x, int y) {
+
+    try {
+      PieceChoice[] choices = {new PieceChoice("reine", PieceType.QUEEN, Queen.class),
+      new PieceChoice("cavalier", PieceType.KNIGHT, Knight.class),
+      new PieceChoice("fou", PieceType.BISHOP, Bishop.class),
+      new PieceChoice("tour", PieceType.ROOK, Rook.class)};
+
+      ChessView.UserChoice c = view.askUser("promotion", "par quelle pièce voulez-vous remplacer votre pion", choices);
+      view.removePiece(x, y);
+
+      int i;
+      for(i = 0; i < choices.length; i++) {
+        if(c.textValue().equalsIgnoreCase(choices[i].textValue())) {
+          break;
+        }
+      }
+
+      if(i < choices.length) {
+        view.putPiece(choices[i].getType(), colorTurn, x, y);
+        board[x][y] = (ChessPiece) choices[i].getPieceClass().getDeclaredConstructor(PlayerColor.class, int.class, int.class).newInstance(board[x][y].color, x, y);
+      }
+        
+    } catch (Exception e) {
+      System.out.println("Promotion error : " + e);
+    }
+    
   }
 
   public void toggleTurn() {
@@ -39,8 +69,13 @@ public class ChessGame implements ChessController {
 
     boolean canMove = board[fromX][fromY].move(toX, toY);
     if (canMove) {
-      if (board[toX][toY] != null){
-        view.displayMessage("a "+ board[toX][toY].color + " " + board[toX][toY].type + " has been eaten");
+      if (board[toX][toY] != null) {
+        if(board[toX][toY].color == board[fromX][fromY].color) {
+          System.out.println("this position is not empty.");
+          return false;
+        } else {
+          view.displayMessage("a "+ board[toX][toY].color + " " + board[toX][toY].type + " has been eaten");
+        }
       }
       view.removePiece(fromX, fromY);
       view.putPiece(board[fromX][fromY].type, board[fromX][fromY].color, toX, toY);
@@ -48,6 +83,17 @@ public class ChessGame implements ChessController {
       board[toX][toY].pos.x = toX;
       board[toX][toY].pos.y = toY;
       board[fromX][fromY] = null;
+
+      // Promotion
+      if(board[toX][toY].type == PieceType.PAWN &&
+              (board[toX][toY].color == PlayerColor.BLACK && toY == 0 ||
+              board[toX][toY].color == PlayerColor.WHITE && toY == Coord.BOARD_SIZE - 1)) {
+
+        System.out.println("promotion");
+        promotion(toX, toY);
+
+      }
+
     } else {
       System.out.println("this piece can't move like this, learn how to play!!!!!");
       return false;

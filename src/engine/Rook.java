@@ -13,6 +13,7 @@ public class Rook extends ChessPiece {
     this(PieceType.ROOK, color, x, y);
   }
 
+  @Override
   protected boolean move (int toX, int toY) {
     return piecesCheck(toX, toY) && (horizontal(toX, toY, true) || vertical(toX, toY, true));
   }

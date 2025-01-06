@@ -14,14 +14,9 @@ public class King extends ChessPiece {
 
   public King(PlayerColor color, int x, int y) {
     this(PieceType.KING, color, x, y);
-
-    //Pour ajouter un mouvement possible: possibleMoves.add(new Coord(int, int));
-    // vérifier si coordonnée valide (0-7)
-
-    ///TODO: ajouter mouvements possibles
-    ///une case autour
   }
 
+  @Override
   protected boolean move (int toX, int toY) {
     return vertical(toX, toY, false) || horizontal(toX, toY, false) || diagonal(toX, toY, false);
   }
