@@ -108,7 +108,7 @@ public class ChessGame implements ChessController {
   public boolean checkEnPassant(int fromX, int fromY, int toX, int toY) {
     return board[fromX][fromY].type == PieceType.PAWN &&
     Math.abs(toX - fromX) == 1 && Math.abs(toY - fromY) == 1 && // Pawn is moving diagonaly
-    board[toX][fromY].type != null && board[toX][fromY].type == PieceType.PAWN // Other piece is a pawn
+    board[toX][fromY] != null && board[toX][fromY].type == PieceType.PAWN // Other piece is a pawn
     && board[toX][fromY].color != board[fromX][fromY].color && // Other piece is of opponent's color
     toX == pieceEnPassant.x && fromY == pieceEnPassant.y; // En passant is possible on that piece
   }
