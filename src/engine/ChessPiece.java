@@ -5,7 +5,7 @@ import chess.PieceType;
 import chess.PlayerColor;
 
 public abstract class ChessPiece {
-  static public ChessPiece[][] board = new ChessPiece[8][8];
+  static public ChessPiece[][] board = new ChessPiece[Coord.BOARD_SIZE][Coord.BOARD_SIZE];
   protected final PieceType type;
   protected final PlayerColor color;
   protected Coord pos;

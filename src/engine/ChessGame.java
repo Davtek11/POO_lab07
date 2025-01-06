@@ -208,6 +208,8 @@ public class ChessGame implements ChessController {
     view.displayMessage("new game (TO REMOVE)"); // TODO
     ///TODO: optimiser placement pieces
 
+    ChessPiece.board = new ChessPiece[Coord.BOARD_SIZE][Coord.BOARD_SIZE];
+
     colorTurn = PlayerColor.WHITE;
     pieceEnPassant = new Coord(-1, -1);
     
