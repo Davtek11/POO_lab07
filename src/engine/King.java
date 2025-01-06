@@ -4,8 +4,6 @@ import chess.PieceType;
 import chess.PlayerColor;
 
 public class King extends ChessPiece {
-
-  private boolean isFirstMove; //répétition avec pion, trouver solution
   
   protected King(PieceType type, PlayerColor color, int x, int y) {
     super(type, color, x, y);

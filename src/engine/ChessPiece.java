@@ -9,11 +9,22 @@ public abstract class ChessPiece {
   protected final PieceType type;
   protected final PlayerColor color;
   protected Coord pos;
+
+  boolean isFirstMove;
+
+  public boolean isFirstMove() {
+    return isFirstMove;
+  }
+
+  public void makeFirstMove() {
+    isFirstMove = false;
+  }
   
   protected ChessPiece(PieceType type, PlayerColor color, int x, int y) {
     this.type = type;
     this.color = color;
     pos = new Coord(x, y);
+    isFirstMove = true;
     if (board[x][y] == null) {
       board[x][y] = this;
     } else {
