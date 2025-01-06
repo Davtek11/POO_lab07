@@ -12,6 +12,7 @@ public class ChessGame implements ChessController {
 
   private ChessView view;
   PlayerColor colorTurn;
+  Coord pieceEnPassant;
 
   @Override
   public void start(ChessView view) {
@@ -63,20 +64,10 @@ public class ChessGame implements ChessController {
     view.displayMessage("Roque by " + board[x][y].color + " player");
 
     // Move king
-    view.removePiece(x, y);
-    view.putPiece(PieceType.KING, board[x][y].color, toX, y);
-    board[toX][y] = board[x][y];
-    board[toX][y].pos.x = toX;
-    board[toX][y].pos.y = y;
-    board[x][y] = null;
+    movePiece(x, y, toX, y);
 
     // Move rook
-    view.removePiece(rookX, y);
-    view.putPiece(PieceType.ROOK, board[rookX][y].color, rookToX, y);
-    board[rookToX][y] = board[rookX][y];
-    board[rookToX][y].pos.x = rookToX;
-    board[rookToX][y].pos.y = y;
-    board[rookX][y] = null;
+    movePiece(rookX, y, rookToX, y);
   }
 
   public boolean checkPromotion(int toX, int toY) {
@@ -114,11 +105,39 @@ public class ChessGame implements ChessController {
     
   }
 
+  public boolean checkEnPassant(int fromX, int fromY, int toX, int toY) {
+    return board[fromX][fromY].type == PieceType.PAWN &&
+    Math.abs(toX - fromX) == 1 && Math.abs(toY - fromY) == 1 && // Pawn is moving diagonaly
+    board[toX][fromY].type != null && board[toX][fromY].type == PieceType.PAWN // Other piece is a pawn
+    && board[toX][fromY].color != board[fromX][fromY].color && // Other piece is of opponent's color
+    toX == pieceEnPassant.x && fromY == pieceEnPassant.y; // En passant is possible on that piece
+  }
+
+  public void enPassant(int fromX, int fromY, int toX, int toY) {
+    view.displayMessage("en passant by " + board[fromX][fromY].color + " player");
+
+    // Eat other piece
+    view.removePiece(toX, fromY);
+    board[toX][fromY] = null;
+
+    // Move piece
+    movePiece(fromX, fromY, toX, toY);
+  }
+
   public void toggleTurn() {
     if(colorTurn == PlayerColor.WHITE)
       colorTurn = PlayerColor.BLACK;
     else if(colorTurn == PlayerColor.BLACK)
       colorTurn = PlayerColor.WHITE;
+  }
+
+  public void movePiece(int fromX, int fromY, int toX, int toY) {
+    view.removePiece(fromX, fromY);
+    view.putPiece(board[fromX][fromY].type, board[fromX][fromY].color, toX, toY);
+    board[toX][toY] = board[fromX][fromY];
+    board[toX][toY].pos.x = toX;
+    board[toX][toY].pos.y = toY;
+    board[fromX][fromY] = null;
   }
 
   @Override
@@ -138,6 +157,10 @@ public class ChessGame implements ChessController {
     if((roqueType = checkRoque(fromX, fromY, toX, toY)) != 0)
     {
       roque(fromX, fromY, roqueType);
+    }
+    else if(checkEnPassant(fromX, fromY, toX, toY))
+    {
+      enPassant(fromX, fromY, toX, toY);
     } 
     else if (board[fromX][fromY].move(toX, toY))
     {
@@ -149,12 +172,15 @@ public class ChessGame implements ChessController {
           view.displayMessage("a "+ board[toX][toY].color + " " + board[toX][toY].type + " has been eaten");
         }
       }
-      view.removePiece(fromX, fromY);
-      view.putPiece(board[fromX][fromY].type, board[fromX][fromY].color, toX, toY);
-      board[toX][toY] = board[fromX][fromY];
-      board[toX][toY].pos.x = toX;
-      board[toX][toY].pos.y = toY;
-      board[fromX][fromY] = null;
+
+      movePiece(fromX, fromY, toX, toY);
+
+      // Check if "en passant" is possible
+      if(board[toX][toY].type == PieceType.PAWN && Math.abs(toY - fromY) == 2) {
+        pieceEnPassant = new Coord(toX, toY);
+      } else {
+        pieceEnPassant = new Coord(-1, -1);
+      }
 
       // Promotion
       if(checkPromotion(toX, toY)) {
@@ -183,6 +209,7 @@ public class ChessGame implements ChessController {
     ///TODO: optimiser placement pieces
 
     colorTurn = PlayerColor.WHITE;
+    pieceEnPassant = new Coord(-1, -1);
     
     // Placement de départ
     view.putPiece(PieceType.ROOK, PlayerColor.WHITE, 0, 0);
