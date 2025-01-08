@@ -1,12 +1,9 @@
 package engine;
 
 import chess.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static engine.ChessPiece.board;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChessGame implements ChessController {
 
@@ -301,7 +298,7 @@ public class ChessGame implements ChessController {
     for(int i = -1; i <2; i++) {
       for(int j = -1; j <2; j++) {
         if(i != 0 || j != 0) {
-          if(checkPotentialThreat(new Coord(i, j),kingsCoord,colorTurn)) {
+          if(checkPotentialThreat(new Coord(i, j), kingsCoord, colorTurn)) {
             return true;
           }
         }
@@ -387,25 +384,6 @@ public class ChessGame implements ChessController {
   }
 
   /*
-   * Checks if at least one piece is threatening the current position of a king
-   * @param kingsCoord the coordinates of the king
-   * @return a boolean indicating if at least one piece is threatening the king
-  */
-  private boolean howMuchThreat (Coord kingsCoord) {
-    int count = 0;
-    for(int x = 0; x < Coord.BOARD_SIZE; x++) {
-      for(int y = 0; y < Coord.BOARD_SIZE; y++) {
-        if(board[x][y] != null && board[x][y].color != colorTurn) {
-          if(board[x][y].move(kingsCoord.x, kingsCoord.y)) {
-            count++;
-          }
-        }
-      }
-    }
-    return count <= 1;
-  }
-
-  /*
    * Gets the path of the piece which is attacking the king
    * @param kingsCoord the coordinates of the king
    * @param thread the coordinates of the piece threatening the king
@@ -431,39 +409,39 @@ public class ChessGame implements ChessController {
   */
   private boolean canNegateThreat(Coord kingsCoord) {
     ChessPiece threat = null;
-    List<Coord> threatenedTiles = new ArrayList<>();
-
-    // 
+    
     for(int x = 0; x < Coord.BOARD_SIZE; x++) {
       for(int y = 0; y < Coord.BOARD_SIZE; y++) {
         ChessPiece piece = board[x][y];
         if(piece != null && piece.color != colorTurn) {
+          // If the piece threatens the king
           if(piece.move(kingsCoord.x, kingsCoord.y)) {
             threat = piece;
 
+            List<Coord> threatenedTiles = new ArrayList<>();
             threatenedTiles.add(new Coord(x,y));
             if(piece.type == PieceType.BISHOP || piece.type == PieceType.QUEEN || piece.type == PieceType.ROOK) {
               threatenedTiles.addAll(getThreatPath(kingsCoord, threat.pos));
             }
-          }
-        }
-      }
-    }
 
-    if(threat != null) {
-      for(int x = 0; x < Coord.BOARD_SIZE; x++) {
-        for(int y = 0; y < Coord.BOARD_SIZE; y++) {
-          ChessPiece piece = board[x][y];
-          if(piece != null && piece.color == colorTurn && piece.type != PieceType.KING) {
-            for(Coord tile : threatenedTiles) {
-              if(piece.move(tile.x, tile.y)) {
-                return true;
+            // Check if a piece can block the threat
+            for(int i = 0; i < Coord.BOARD_SIZE; i++) {
+              for(int j = 0; j < Coord.BOARD_SIZE; j++) {
+                ChessPiece pieceDefend = board[i][j];
+                if(pieceDefend != null && pieceDefend.color == colorTurn && pieceDefend.type != PieceType.KING) {
+                  for(Coord tile : threatenedTiles) {
+                    if(pieceDefend.move(tile.x, tile.y)) {
+                      return true;
+                    }
+                  }
+                }
               }
             }
           }
         }
       }
     }
+
     return false;
   }
 
@@ -477,19 +455,15 @@ public class ChessGame implements ChessController {
   */
   private boolean stillEchec(int fromX, int fromY, int toX, int toY) {
 
-    ChessPiece[][] copyBoard = Arrays.copyOf(board, board.length);
-    for(int i = 0; i < board.length; i++) {
-      copyBoard[i] = Arrays.copyOf(board[i], board[i].length);
-    }
-
-    ChessPiece fromPiece = copyBoard[fromX][fromY];
+    ChessPiece fromPiece = board[fromX][fromY];
+    ChessPiece toPiece = board[toX][toY];
 
     boolean still = false;
     // Try to move the piece
     fromPiece.pos.x = toX;
     fromPiece.pos.y = toY;
-    copyBoard[toX][toY] = fromPiece;
-    copyBoard[fromX][fromY] = null;
+    board[toX][toY] = fromPiece;
+    board[fromX][fromY] = null;
 
     // Check if the king is still attacked in the new configuration
     Coord kingsCoord = colorTurn == PlayerColor.BLACK ? blackKing : whiteKing;
@@ -500,6 +474,11 @@ public class ChessGame implements ChessController {
       view.displayMessage("you cannot do that");
       still =  true;
     }
+
+    fromPiece.pos.x = fromX;
+    fromPiece.pos.y = fromY;
+    board[toX][toY] = toPiece;
+    board[fromX][fromY] = fromPiece;
 
     return still;
   }
