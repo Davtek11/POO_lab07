@@ -19,4 +19,10 @@ public class Coord {
 
     return this.x == other.x && this.y == other.y;
   }
+
+  @Override
+  public int hashCode() {
+      int hash = this.x + this.y;
+      return hash;
+  }
 }
