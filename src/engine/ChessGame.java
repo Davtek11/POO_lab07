@@ -176,7 +176,7 @@ public class ChessGame implements ChessController {
   public void echecCheck(){
     Coord kingsCoord = colorTurn == PlayerColor.BLACK ? blackKing : whiteKing;
     boolean echec = false;
-    boolean mat = true;
+    boolean mat;
     boolean canNegate = false;
     boolean pat;
 
