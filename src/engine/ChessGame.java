@@ -343,7 +343,7 @@ public class ChessGame implements ChessController {
     return false;
   }
 
-  private boolean stillechec (int fromX, int fromY, int toX, int toY){
+  private boolean stillEchec(int fromX, int fromY, int toX, int toY){
     ChessPiece fromPiece = board[fromX][fromY];
     ChessPiece toPiece = board[toX][toY];
 
@@ -403,7 +403,7 @@ public class ChessGame implements ChessController {
         }
       }
 
-      if (stillechec(fromX, fromY, toX, toY)){
+      if (stillEchec(fromX, fromY, toX, toY)){
         return false;
       }
       movePiece(fromX, fromY, toX, toY);
