@@ -5,12 +5,8 @@ import chess.PlayerColor;
 
 public class Knight extends ChessPiece {
 
-  protected Knight(PieceType type, PlayerColor color, int x, int y) {
-    super(type, color, x, y);
-  }
-
   public Knight(PlayerColor color, int x, int y) {
-    this(PieceType.KNIGHT, color, x, y);
+    super(PieceType.KNIGHT, color, x, y);
   }
 
   @Override

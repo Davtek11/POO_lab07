@@ -4,14 +4,9 @@ import chess.PieceType;
 import chess.PlayerColor;
 
 public class Pawn extends ChessPiece {
-  
-  protected Pawn(PieceType type, PlayerColor color, int x, int y) {
-    super(type, color, x, y);
-    isFirstMove = true;
-  }
 
   public Pawn(PlayerColor color, int x, int y) {
-    this(PieceType.PAWN, color, x, y);
+    super(PieceType.PAWN, color, x, y);
   }
 
   @Override

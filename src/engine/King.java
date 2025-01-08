@@ -5,13 +5,8 @@ import chess.PlayerColor;
 
 public class King extends ChessPiece {
   
-  protected King(PieceType type, PlayerColor color, int x, int y) {
-    super(type, color, x, y);
-    isFirstMove = true;
-  }
-
   public King(PlayerColor color, int x, int y) {
-    this(PieceType.KING, color, x, y);
+    super(PieceType.KING, color, x, y);
   }
 
   @Override
