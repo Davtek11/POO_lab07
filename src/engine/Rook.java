@@ -15,6 +15,11 @@ public class Rook extends ChessPiece {
 
   @Override
   protected boolean move (int toX, int toY) {
-    return piecesCheck(toX, toY) && (horizontal(toX, toY, true) || vertical(toX, toY, true));
+    return (horizontal(toX, toY, true) || vertical(toX, toY, true)) && piecesCheck(toX, toY);
+  }
+
+  @Override
+  protected boolean canMove() {
+    return true;
   }
 }

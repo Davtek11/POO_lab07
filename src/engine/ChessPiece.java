@@ -34,6 +34,8 @@ public abstract class ChessPiece {
 
   protected abstract boolean move (int toX, int toY);
 
+  protected abstract boolean canMove ();
+
   protected boolean diagonal(int toX, int toY, boolean multipleMove) {
     return Math.abs(pos.x - toX) == Math.abs(pos.y - toY) && multipleMove || Math.abs(pos.x - toX) == 1 && Math.abs(pos.y - toY) == 1 ;
   }

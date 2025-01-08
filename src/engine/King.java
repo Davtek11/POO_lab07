@@ -19,4 +19,8 @@ public class King extends ChessPiece {
     return vertical(toX, toY, false) || horizontal(toX, toY, false) || diagonal(toX, toY, false);
   }
 
+  @Override
+  protected boolean canMove() {
+    return false;
+  }
 }
