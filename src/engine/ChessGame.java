@@ -142,8 +142,9 @@ public class ChessGame implements ChessController {
     if (board[fromX][fromY].type == PieceType.KING) {
       if (board[fromX][fromY].color == PlayerColor.BLACK){
         blackKing = new Coord(toX, toY);
+      } else {
+        whiteKing = new Coord(toX, toY);
       }
-      whiteKing = new Coord(toX, toY);
     }
     view.removePiece(fromX, fromY);
     view.putPiece(board[fromX][fromY].type, board[fromX][fromY].color, toX, toY);
