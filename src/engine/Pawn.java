@@ -28,9 +28,12 @@ public class Pawn extends ChessPiece {
     }
     canMove = canMove && this.pos.x == toX && piecesCheck(toX, toY);
 
-    if (canMove && board[toX][toY] == null || isCapturing) {
-      return true;
-    }
-    return false;
+      return canMove && board[toX][toY] == null || isCapturing;
+  }
+
+  protected boolean canMove(){
+    return move(this.pos.x, this.pos.y + (color == PlayerColor.BLACK? -1 : 1))
+            || move(this.pos.x - 1, this.pos.y + (color == PlayerColor.BLACK? -1 : 1))
+            || move(this.pos.x + 1, this.pos.y + (color == PlayerColor.BLACK? -1 : 1));
   }
 }

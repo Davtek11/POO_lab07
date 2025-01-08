@@ -1,18 +1,20 @@
 package engine;
 
-import chess.ChessController;
-import chess.ChessView;
-import chess.Coord;
-import chess.PieceChoice;
-import chess.PieceType;
-import chess.PlayerColor;
+import chess.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static engine.ChessPiece.board;
 
 public class ChessGame implements ChessController {
 
   private ChessView view;
-  PlayerColor colorTurn;
-  Coord pieceEnPassant;
+  private PlayerColor colorTurn;
+  private Coord pieceEnPassant;
+  private Coord whiteKing;
+  private Coord blackKing;
+  private boolean end;
 
   @Override
   public void start(ChessView view) {
@@ -132,6 +134,12 @@ public class ChessGame implements ChessController {
   }
 
   public void movePiece(int fromX, int fromY, int toX, int toY) {
+    if (board[fromX][fromY].type == PieceType.KING) {
+      if (board[fromX][fromY].color == PlayerColor.BLACK){
+        blackKing = new Coord(toX, toY);
+      }
+      whiteKing = new Coord(toX, toY);
+    }
     view.removePiece(fromX, fromY);
     view.putPiece(board[fromX][fromY].type, board[fromX][fromY].color, toX, toY);
     board[toX][toY] = board[fromX][fromY];
@@ -140,8 +148,232 @@ public class ChessGame implements ChessController {
     board[fromX][fromY] = null;
   }
 
+  public boolean knightCheck(Coord base) {
+    int[][] moves = {
+            {1, 2}, {-1, 2}, {2, -1}, {2, 1},
+            {-1, -2}, {1, -2}, {-2, -1}, {-2, 1}
+    };
+
+    for (int[] move : moves) {
+      int newX = base.x + move[0];
+      int newY = base.y + move[1];
+
+      if (isInsideBoard(newX, newY) &&
+              board[newX][newY] != null &&
+              board[newX][newY].type == PieceType.KNIGHT &&
+              board[newX][newY].color != colorTurn) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isInsideBoard(int x, int y) {
+    return x >= 0 && x < board.length && y >= 0 && y < board[0].length;
+  }
+
+
+  public void echecCheck(){
+    Coord kingsCoord = colorTurn == PlayerColor.BLACK ? blackKing : whiteKing;
+    boolean echec = false;
+    boolean mat = true;
+    boolean canNegate = false;
+    boolean pat;
+
+    if (isInEchec(kingsCoord)){
+      view.displayMessage("Player " + colorTurn + " is in echec");
+      echec = true;
+    }
+
+    mat = isSurrounded(kingsCoord);
+
+    if (howMuchThreat(kingsCoord)){
+      canNegate = canNegateThreat(kingsCoord);
+    }
+
+    if (echec && mat && !canNegate){
+      view.displayMessage("Player " + colorTurn + " is in echec et mat he lost");
+      end = true;
+
+    }
+
+    pat = !canAnyPieceMove(colorTurn);
+
+
+    if (!echec && pat){
+      view.displayMessage("Player " + colorTurn + " is in pat, it is a tie");
+      end = true;
+    }
+  }
+
+  private boolean isInEchec (Coord kingsCoord){
+    for (int i = -1; i <2; i++){
+      for (int j = -1; j <2; j++){
+        if (i != 0 || j != 0){
+          if (checkPotentialThreat(new Coord(i, j),kingsCoord,colorTurn)){
+            return true;
+          }
+        }
+      }
+    }
+    return knightCheck(kingsCoord);
+  }
+
+  private boolean isSurrounded (Coord kingsCoord){
+    for (int i = -1; i <= 1; i++) {
+      for (int j = -1; j <= 1; j++) {
+        if (i != 0 || j != 0) {
+          Coord tile = new Coord(kingsCoord.x + i, kingsCoord.y + j);
+          if (isInsideBoard(tile.x, tile.y) &&
+                  (board[tile.x][tile.y] == null || board[tile.x][tile.y].color != colorTurn)) {
+            if (!isInEchec(tile) && !knightCheck(tile)) {
+              return false;
+            }
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  private boolean canAnyPieceMove (PlayerColor color){
+    for (int x = 0; x < 8; x++) {
+      for (int y = 0; y < 8; y++) {
+        if (board[x][y] != null && board[x][y].color == color) {
+          if (board[x][y].type == PieceType.KING) {
+            if (!isSurrounded(new Coord(x, y))){
+              return true;
+            }
+
+          } else {
+            if (board[x][y].canMove()) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  public boolean checkPotentialThreat(Coord add, Coord baseCoord, PlayerColor color) {
+    Coord tile = new Coord(baseCoord.x, baseCoord.y);
+    for (int i = 0; i < 8 - Math.max(Math.abs(add.x), Math.abs(add.y)); i++ ) {
+      tile.x += add.x;
+      tile.y += add.y;
+
+      if (!isInsideBoard(tile.x, tile.y)){
+        break;
+      }
+
+
+      if (board[tile.x][tile.y] != null) {
+        if (board[tile.x][tile.y].color != color){
+          if (board[tile.x][tile.y].move(baseCoord.x, baseCoord.y)) {
+            return true;
+          }
+        }
+        break;
+      }
+    }
+    return false;
+  }
+
+  private boolean howMuchThreat (Coord kingsCoord){
+    int count = 0;
+    for (int x = 0; x < 8; x++) {
+      for (int y = 0; y < 8; y++) {
+        if (board[x][y] != null && board[x][y].color != colorTurn) {
+          if (board[x][y].move(kingsCoord.x, kingsCoord.y)) {
+            count++;
+          }
+        }
+      }
+    }
+    return count <= 1;
+  }
+
+  private List<Coord> getThreatPath (Coord kingsCoord, Coord threat){
+    List<Coord> path = new ArrayList<>();
+    int dx = Integer.compare(threat.x, kingsCoord.x);
+    int dy = Integer.compare(threat.y, kingsCoord.y);
+
+    int steps = Math.max(Math.abs(threat.x - kingsCoord.x), Math.abs(threat.y - kingsCoord.y));
+    for (int i = 1; i < steps; i++) {
+      path.add(new Coord(kingsCoord.x + i * dx, kingsCoord.y + i * dy));
+    }
+
+    return path;
+  }
+
+  private boolean canNegateThreat (Coord kingsCoord){
+    ChessPiece threat = null;
+    List<Coord> threatenedTiles = new ArrayList<>();
+
+    for (int x = 0; x < 8; x++) {
+      for (int y = 0; y < 8; y++) {
+        ChessPiece piece = board[x][y];
+        if (piece != null && piece.color != colorTurn) {
+          if (piece.move(kingsCoord.x, kingsCoord.y)) {
+            threat = piece;
+
+            threatenedTiles.add(new Coord(x,y));
+            if (piece.type == PieceType.BISHOP || piece.type == PieceType.QUEEN || piece.type == PieceType.ROOK){
+              threatenedTiles.addAll(getThreatPath(kingsCoord, threat.pos));
+            }
+          }
+        }
+      }
+    }
+
+    if (threat != null){
+      for (int x = 0; x < 8; x++) {
+        for (int y = 0; y < 8; y++) {
+          ChessPiece piece = board[x][y];
+          if (piece != null && piece.color == colorTurn && piece.type != PieceType.KING) {
+            for (Coord tile: threatenedTiles) {
+              if (piece.move(tile.x, tile.y)) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  private boolean stillechec (int fromX, int fromY, int toX, int toY){
+    ChessPiece fromPiece = board[fromX][fromY];
+    ChessPiece toPiece = board[toX][toY];
+
+    boolean still = false;
+    fromPiece.pos.x = toX;
+    fromPiece.pos.y = toY;
+    board[toX][toY] = fromPiece;
+    board[fromX][fromY] = null;
+    Coord kingsCoord = colorTurn == PlayerColor.BLACK ? blackKing : whiteKing;
+    if (fromPiece.type == PieceType.KING){
+      kingsCoord = new Coord(toX, toY);
+    }
+    if (isInEchec(kingsCoord)){
+      view.displayMessage("you cannot do that");
+      still =  true;
+    }
+    fromPiece.pos.x = fromX;
+    fromPiece.pos.y = fromY;
+    board[fromX][fromY] = fromPiece;
+    board[toX][toY] = toPiece;
+
+    return still;
+  }
+
   @Override
   public boolean move(int fromX, int fromY, int toX, int toY) {
+    if (end){
+      view.displayMessage("the game has ended you cannot continue");
+      return false;
+    }
 
     if(board[fromX][fromY] == null) {
       return false;
@@ -149,8 +381,6 @@ public class ChessGame implements ChessController {
       System.out.println("Not your turn !!!!");
       return false;
     }
-
-    System.out.printf("TO REMOVE : from (%d, %d) to (%d, %d)%n", fromX, fromY, toX, toY); // TODO remove
 
     // Roque if possible, else check other movements
     int roqueType = 0;
@@ -173,6 +403,9 @@ public class ChessGame implements ChessController {
         }
       }
 
+      if (stillechec(fromX, fromY, toX, toY)){
+        return false;
+      }
       movePiece(fromX, fromY, toX, toY);
 
       // Check if "en passant" is possible
@@ -200,12 +433,14 @@ public class ChessGame implements ChessController {
     }
 
     toggleTurn();
+    echecCheck();
     return true;
   }
 
   @Override
   public void newGame() {
-    view.displayMessage("new game (TO REMOVE)"); // TODO
+    end = false;
+    board = new ChessPiece[8][8];
     ///TODO: optimiser placement pieces
 
     colorTurn = PlayerColor.WHITE;
@@ -221,6 +456,7 @@ public class ChessGame implements ChessController {
     view.putPiece(PieceType.QUEEN, PlayerColor.WHITE, 3, 0);
     new Queen(PlayerColor.WHITE, 3, 0);
     view.putPiece(PieceType.KING, PlayerColor.WHITE, 4, 0);
+    whiteKing = new Coord(4, 0);
     new King(PlayerColor.WHITE, 4, 0);
     view.putPiece(PieceType.BISHOP, PlayerColor.WHITE, 5, 0);
     new Bishop(PlayerColor.WHITE, 5, 0);
@@ -243,6 +479,7 @@ public class ChessGame implements ChessController {
     view.putPiece(PieceType.QUEEN, PlayerColor.BLACK, 3, 7);
     new Queen(PlayerColor.BLACK, 3, 7);
     view.putPiece(PieceType.KING, PlayerColor.BLACK, 4, 7);
+    blackKing = new Coord(4, 7);
     new King(PlayerColor.BLACK, 4, 7);
     view.putPiece(PieceType.BISHOP, PlayerColor.BLACK, 5, 7);
     new Bishop(PlayerColor.BLACK, 5, 7);

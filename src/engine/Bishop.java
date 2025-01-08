@@ -17,5 +17,9 @@ public class Bishop extends ChessPiece {
   public boolean move (int toX, int toY) {
     return diagonal(toX, toY, true) && piecesCheck(toX, toY);
   }
-  
+
+  @Override
+  protected boolean canMove() {
+    return true;
+  }
 }
