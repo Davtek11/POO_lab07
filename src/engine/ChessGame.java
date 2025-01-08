@@ -1,10 +1,12 @@
 package engine;
 
 import chess.*;
-import static engine.ChessPiece.board;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static engine.ChessPiece.board;
 
 public class ChessGame implements ChessController {
 
@@ -423,9 +425,9 @@ public class ChessGame implements ChessController {
   }
 
   /*
-   * Checks if
-   * @param kingsCoord the current coordinates of the king
-   * @return a boolean indicating if
+   * Checks if the king that is checked can recover during his next turn otherwise he is checkmate
+   * @param kingsCoord the current coordinates of the king that is checked
+   * @return a boolean indicating if he can get out of the check situation
   */
   private boolean canNegateThreat(Coord kingsCoord) {
     ChessPiece threat = null;
