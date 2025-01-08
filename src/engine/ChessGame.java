@@ -38,6 +38,11 @@ public class ChessGame implements ChessController {
       } else {
         return 0;
       }
+      for (int i = 0; i < 2; i++){
+        if (stillEchec(fromX, fromY, fromX - ( 1 + i) * ret , toY)){
+          return 0;
+        }
+      }
 
       if(board[fromX][fromY].piecesCheck(rookX, toY) && board[rookX][toY] != null && board[rookX][toY].type == PieceType.ROOK && board[rookX][toY].isFirstMove()) {
         return ret;
@@ -148,7 +153,7 @@ public class ChessGame implements ChessController {
     board[fromX][fromY] = null;
   }
 
-  public boolean knightCheck(Coord base) {
+  private boolean knightCheck(Coord base) {
     int[][] moves = {
             {1, 2}, {-1, 2}, {2, -1}, {2, 1},
             {-1, -2}, {1, -2}, {-2, -1}, {-2, 1}
@@ -173,7 +178,7 @@ public class ChessGame implements ChessController {
   }
 
 
-  public void echecCheck(){
+  private void echecCheck(){
     Coord kingsCoord = colorTurn == PlayerColor.BLACK ? blackKing : whiteKing;
     boolean echec = false;
     boolean mat;
@@ -256,7 +261,7 @@ public class ChessGame implements ChessController {
     return false;
   }
 
-  public boolean checkPotentialThreat(Coord add, Coord baseCoord, PlayerColor color) {
+  private boolean checkPotentialThreat(Coord add, Coord baseCoord, PlayerColor color) {
     Coord tile = new Coord(baseCoord.x, baseCoord.y);
     for (int i = 0; i < 8 - Math.max(Math.abs(add.x), Math.abs(add.y)); i++ ) {
       tile.x += add.x;
