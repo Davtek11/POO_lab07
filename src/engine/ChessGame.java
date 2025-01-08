@@ -268,18 +268,17 @@ public class ChessGame implements ChessController {
     boolean pat;
 
     if(isInEchec(kingsCoord)) {
-      view.displayMessage("Player " + colorTurn + " is in echec");
+      view.displayMessage("Check !");
       echec = true;
     }
 
     mat = isSurrounded(kingsCoord);
 
-    if(howMuchThreat(kingsCoord)) {
-      canNegate = canNegateThreat(kingsCoord);
-    }
+    canNegate = canNegateThreat(kingsCoord);
+
 
     if(echec && mat && !canNegate) {
-      view.displayMessage("Player " + colorTurn + " is in echec et mat he lost");
+      view.displayMessage("Checkmate !");
       end = true;
 
     }
@@ -288,7 +287,7 @@ public class ChessGame implements ChessController {
 
 
     if(!echec && pat) {
-      view.displayMessage("Player " + colorTurn + " is in pat, it is a tie");
+      view.displayMessage("Pat !");
       end = true;
     }
   }
